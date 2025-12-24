@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="/css/home.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <h2 class="logo">MarketMapper</h2>
+        <a href="/history" class="history-btn">Show History</a>
+    </header>
+
+    <main class="main-container">
+        <form class="search-form" method="POST" action="/search">
+            <textarea 
+                name="businessIdea" 
+                placeholder="Describe your business idea..."
+                required
+            ></textarea><br> <br>
+            <button type="submit">Analyze your idea</button>
+        </form>
+    </main>
+
+</body>
+</html>
