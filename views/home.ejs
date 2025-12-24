@@ -1,27 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Home</title>
-    <link rel="stylesheet" href="/css/home.css">
-</head>
-<body>
+<% layout("/layouts/boilerPlate.ejs") -%>
 
-    <header class="navbar">
-        <h2 class="logo">MarketMapper</h2>
-        <a href="/history" class="history-btn">Show History</a>
-    </header>
+<main class="mm-main">
+    <form class="mm-form" method="POST" action="/search">
 
-    <main class="main-container">
-        <form class="search-form" method="POST" action="/search">
-            <textarea 
-                name="businessIdea" 
-                placeholder="Describe your business idea..."
+        <!-- Business Idea -->
+        <textarea
+            class="mm-textarea"
+            name="businessIdea"
+            placeholder="Describe your business idea..."
+            required
+        ></textarea>
+
+        <!-- Location Input -->
+        <div class="mm-location">
+            <label for="location" class="mm-label">
+                Select Location
+            </label>
+
+            <input
+                class="mm-input"
+                type="text"
+                id="location"
+                name="locationName"
+                placeholder="Start typing a location..."
+                autocomplete="off"
                 required
-            ></textarea><br> <br>
-            <button type="submit">Analyze your idea</button>
-        </form>
-    </main>
+            />
 
-</body>
-</html>
+            <!-- Suggestions -->
+            <ul class="mm-suggestions" id="suggestions"></ul>
+        </div>
+
+        <!-- Map -->
+        <div class="mm-map-wrapper">
+            <div id="map" class="mm-map">
+                Map will appear here
+            </div>
+        </div>
+
+        <!-- Hidden coordinates -->
+        <input type="hidden" name="latitude" id="latitude">
+        <input type="hidden" name="longitude" id="longitude">
+
+        <button class="mm-btn" type="submit">
+            Analyze your idea
+        </button>
+
+    </form>
+</main>

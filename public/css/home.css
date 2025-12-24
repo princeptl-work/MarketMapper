@@ -1,90 +1,117 @@
-* {
-    margin: 0;
-    padding: 0;
+/* Reset only inside our app */
+.mm-main * {
     box-sizing: border-box;
     font-family: Arial, sans-serif;
 }
 
-body {
+/* Page */
+.mm-main {
     min-height: 100vh;
     background: #0f172a;
-    color: #e5e7eb;
-}
-
-/* Navbar */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 40px;
-    background: #020617;
-}
-
-.logo {
-    font-size: 22px;
-    font-weight: bold;
-}
-
-.history-btn {
-    text-decoration: none;
-    padding: 8px 16px;
-    background: #2563eb;
-    color: #fff;
-    border-radius: 6px;
-    font-size: 14px;
-}
-
-.history-btn:hover {
-    background: #1d4ed8;
-}
-
-/* Main Section */
-.main-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: calc(100vh - 80px);
+    padding: 40px 0;
 }
 
-.search-form {
-    width: 500px;
+/* Form */
+.mm-form {
+    width: 540px;
     background: #020617;
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
-.search-form textarea {
+/* Textarea */
+.mm-textarea {
     width: 100%;
-    height: 140px;
-    resize: none;
+    height: 120px;
     padding: 12px;
-    border-radius: 8px;
-    border: none;
-    outline: none;
-    font-size: 14px;
     background: #020617;
-    color: #e5e7eb;
     border: 1px solid #334155;
+    border-radius: 8px;
+    color: #e5e7eb;
+    resize: none;
+    margin-bottom: 20px;
 }
 
-.helper-text {
-    margin: 12px 0 20px;
-    font-size: 13px;
+.mm-textarea::placeholder {
     color: #94a3b8;
 }
 
-.search-form button {
+/* Location */
+.mm-location {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.mm-label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #94a3b8;
+}
+
+.mm-input {
+    width: 100%;
+    padding: 10px;
+    background: #020617;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    color: #e5e7eb;
+}
+
+/* Suggestions */
+.mm-suggestions {
+    list-style: none;
+    position: absolute;
+    width: 100%;
+    background: #020617;
+    border: 1px solid #334155;
+    border-top: none;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 50;
+}
+
+.mm-suggestions li {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #1e293b;
+}
+
+.mm-suggestions li:hover {
+    background: #1e293b;
+}
+
+/* Map */
+.mm-map-wrapper {
+    margin-bottom: 20px;
+}
+
+.mm-map {
+    height: 200px;
+    border-radius: 10px;
+    border: 1px dashed #475569;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+}
+
+/* Button */
+.mm-btn {
     width: 100%;
     padding: 12px;
     background: #22c55e;
     border: none;
     border-radius: 8px;
-    color: #020617;
     font-weight: bold;
+    color: #020617;
     cursor: pointer;
 }
 
-.search-form button:hover {
+.mm-btn:hover {
     background: #16a34a;
 }

@@ -10,7 +10,9 @@
   "description": "",
   "dependencies": {
     "ejs": "^3.1.10",
+    "ejs-mate": "^4.0.0",
     "express": "^5.2.1",
+    "mongoos": "^0.0.1-security",
     "node": "^24.12.0"
   }
 }
