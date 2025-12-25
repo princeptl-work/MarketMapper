@@ -1,10 +1,7 @@
-const mongoose = require('mongoose');
-mongoose.connect('mongodb://127.0.0.1:27017/mm')
-  .then(() => console.log('Connected!'));
-const userSchema  = new mongoose.Schema({
-    name : {
-        type : string,
-        require : true
-    },
-    
-})
+const mongoose = require("mongoose");
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  googleId: String,
+});
+module.exports = mongoose.model("User", userSchema);

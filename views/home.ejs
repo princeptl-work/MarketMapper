@@ -1,50 +1,44 @@
 <% layout("/layouts/boilerPlate.ejs") -%>
 
 <main class="mm-main">
-    <form class="mm-form" method="POST" action="/search">
+  <form
+    class="mm-form needs-validation"
+    method="GET"
+    action="/result"
+    novalidate
+  >
+    <!-- Business Idea -->
+    <textarea
+      class="mm-textarea form-control mb-0"
+      name="prompt[business]"
+      placeholder="Describe your business idea..."
+      required
+    ></textarea>
+    <div class="invalid-feedback">Please enter valid Prompt.</div>
+    <!-- Location Input -->
+    <div class="mm-location">
+      <label for="location" class="mm-label mt-4 form-label"> Select Location </label>
+      <input
+        class="mm-input form-control"
+        type="text"
+        id="location"
+        name="prompt[location]"
+        placeholder="Start typing a location..."
+        autocomplete="off"
+        required
+      />
+      <div class="invalid-feedback">Please enter valid location</div>
+    </div>
 
-        <!-- Business Idea -->
-        <textarea
-            class="mm-textarea"
-            name="businessIdea"
-            placeholder="Describe your business idea..."
-            required
-        ></textarea>
+    <!-- Map -->
+    <div class="mm-map-wrapper">
+      <div id="map" class="mm-map mt-3">Map will appear here</div>
+    </div>
 
-        <!-- Location Input -->
-        <div class="mm-location">
-            <label for="location" class="mm-label">
-                Select Location
-            </label>
+    <!-- Hidden coordinates -->
+    <input type="hidden" name="latitude" id="latitude" />
+    <input type="hidden" name="longitude" id="longitude" />
 
-            <input
-                class="mm-input"
-                type="text"
-                id="location"
-                name="locationName"
-                placeholder="Start typing a location..."
-                autocomplete="off"
-                required
-            />
-
-            <!-- Suggestions -->
-            <ul class="mm-suggestions" id="suggestions"></ul>
-        </div>
-
-        <!-- Map -->
-        <div class="mm-map-wrapper">
-            <div id="map" class="mm-map">
-                Map will appear here
-            </div>
-        </div>
-
-        <!-- Hidden coordinates -->
-        <input type="hidden" name="latitude" id="latitude">
-        <input type="hidden" name="longitude" id="longitude">
-
-        <button class="mm-btn" type="submit">
-            Analyze your idea
-        </button>
-
-    </form>
+    <button class="mm-btn" type="submit">Analyze your idea</button>
+  </form>
 </main>
