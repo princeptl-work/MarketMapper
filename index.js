@@ -132,7 +132,7 @@ app.post(
     let { error } = promptSchema.validate(req.body);
     if (error) {
       let errMsg = error.details.map((el) => el.message).join(",");
-      throw new ExpressError(404, errMsg);
+      throw new expressError(404, errMsg);
     }
     res.send("Result will be shown here ...");
   })
