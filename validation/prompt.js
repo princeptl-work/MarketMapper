@@ -1,7 +1,8 @@
 const joi = require("joi");
-const ExpressError = require("../utils/errorHandler.js");
 const promptSchema = joi.object({
-      location: joi.string().required(),
-      business: joi.string().required(),
+       prompt: joi.object({
+    business: joi.string().required(),
+    location: joi.string().required(),
+  }).required()
 });
 module.exports = promptSchema;

@@ -1,10 +1,10 @@
+// Env setup
+require("dotenv").config();
+
 // Importing express
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-
-// Env setup
-require("dotenv").config();
 
 // Setting views path
 const path = require("path");
@@ -38,8 +38,16 @@ app.engine("ejs", ejsMate);
 var session = require("express-session");
 const MongoStore = require("connect-mongo");
 const passport = require("passport");
+
+const store = MongoStore.create({
+  mongoUrl: process.env.DATABASE_LINK,
+  secret: process.env.SECRET ,
+  touchAfter: 24 * 3600,
+});
+
 app.use(
   session({
+    store,
     secret: process.env.SECRET,
     resave: false,
     saveUninitialized: true,
@@ -48,13 +56,6 @@ app.use(
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     },
-    store: MongoStore.create({
-      mongoUrl: process.env.DATABASE_LINK,
-      crypto: {
-        secret: process.env.SECRET,
-      },
-      touchAfter: 24 * 3600,
-    }),
   })
 );
 
@@ -106,10 +107,12 @@ app.get(
 app.get(
   "/auth/google/callback",
   saveUrl,
-  passport.authenticate("google", { failureRedirect: "/" }),
+  passport.authenticate("google", { failureRedirect: "/", failureFlash: true }),
   (req, res) => {
     req.flash("success", "Welcome to MarketMapper !!");
-    res.redirect(res.locals.url || "/");
+    const redirectUrl = res.locals.url || "/";
+    delete req.session.redirectUrl;
+    res.redirect(redirectUrl);
   }
 );
 
@@ -122,13 +125,18 @@ app.get("/logout", isLoggedIn, (req, res, next) => {
 });
 
 // Result Page
-app.get("/result", isLoggedIn, (req, res) => {
-  let { error } = promptSchema.validate(req.body.prompt);
-  if (error) {
-    let err = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(404, err);
-  } else res.send("Result will be shown here ...");
-});
+app.post(
+  "/result",
+  isLoggedIn,
+  wrapAsync(async (req, res) => {
+    let { error } = promptSchema.validate(req.body);
+    if (error) {
+      let errMsg = error.details.map((el) => el.message).join(",");
+      throw new ExpressError(404, errMsg);
+    }
+    res.send("Result will be shown here ...");
+  })
+);
 
 // History page
 app.get("/history", isLoggedIn, (req, res) => {
@@ -137,9 +145,8 @@ app.get("/history", isLoggedIn, (req, res) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  let { status = 400, message = "This page not found" } = err;
+  let { status: st = 400, message = "This page not found" } = err;
   res
-    .status(status)
-    .render("error", { title: "Error", link: "error", code: status, message });
-  next();
+    .status(st)
+    .render("error", { title: "Error", link: "error", code: st, message });
 });
