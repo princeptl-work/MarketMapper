@@ -1,0 +1,115 @@
+.history-page {
+    min-height: 100vh;
+    background: radial-gradient(
+        circle at top,
+        #020617 0%,
+        #0f172a 50%,
+        #020617 100%
+    );
+    padding: 60px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.history-container {
+    width: 100%;
+    max-width: 900px;
+}
+
+.history-title {
+    text-align: center;
+    font-size: 28px;
+    color: #f8fafc;
+    margin-bottom: 6px;
+}
+
+.history-subtitle {
+    text-align: center;
+    font-size: 14px;
+    color: #94a3b8;
+    margin-bottom: 40px;
+}
+
+/* Empty */
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    border: 1px dashed #1e293b;
+    border-radius: 14px;
+    color: #64748b;
+}
+
+/* Cards */
+.history-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 22px;
+}
+
+.history-card {
+    background: rgba(2, 6, 23, 0.95);
+    border: 1px solid #1e293b;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.45);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.history-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+/* Scores */
+.history-scores {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+
+.history-scores div {
+    background: #020617;
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+}
+
+.history-scores span {
+    display: block;
+    font-size: 12px;
+    color: #94a3b8;
+    margin-bottom: 4px;
+}
+
+.history-scores strong {
+    font-size: 22px;
+    color: #f8fafc;
+}
+
+/* Verdict */
+.history-verdict {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #1e293b;
+}
+
+.history-verdict span {
+    display: block;
+    font-size: 13px;
+    color: #94a3b8;
+    margin-bottom: 6px;
+}
+
+.history-verdict p {
+    font-size: 14.5px;
+    color: #cbd5f5;
+    line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .history-scores {
+        grid-template-columns: 1fr 1fr;
+    }
+}

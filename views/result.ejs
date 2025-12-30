@@ -1,3 +1,41 @@
-<script>
-    
-</script>
+<% layout("/layouts/boilerPlate.ejs") -%>
+
+<div class="result-page">
+    <div class="result-card">
+
+        <h1 class="result-title">Market Analysis Result</h1>
+        <p class="result-subtitle">
+            Location viability score breakdown
+        </p>
+
+        <div class="scores-grid">
+
+            <div class="score-box">
+                <span class="score-label">Competition</span>
+                <span class="score-value"><%= data["competition"] %>/100</span>
+            </div>
+
+            <div class="score-box">
+                <span class="score-label">Complementary</span>
+                <span class="score-value"><%= data["complementary"] %>/100</span>
+            </div>
+
+            <div class="score-box">
+                <span class="score-label">Accessibility</span>
+                <span class="score-value"><%= data["accessibility"] %>/100</span>
+            </div>
+
+            <div class="score-box">
+                <span class="score-label">Density</span>
+                <span class="score-value"><%= data["density"] %>/100</span>
+            </div>
+
+        </div>
+
+        <div class="verdict-section">
+            <h3>Verdict</h3>
+            <p><%= data["verdict"] %></p>
+        </div>
+
+    </div>
+</div>

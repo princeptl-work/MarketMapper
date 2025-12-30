@@ -16,7 +16,7 @@ app.set("view engine", "ejs");
 // Gemini
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
 // Importing utils
 const expressError = require("./utils/errorHandler.js");
@@ -38,6 +38,9 @@ app.use(express.static(path.join(__dirname, "public")));
 const ejsMate = require("ejs-mate");
 const { title } = require("process");
 app.engine("ejs", ejsMate);
+
+// Importing report model
+const Report = require("./models/Report.js");
 
 // Express session
 var session = require("express-session");
@@ -172,9 +175,8 @@ Generate a lightweight Overpass query to find direct competitors for: "${req.bod
   node(around:1000,${req.body.prompt.lat},${req.body.prompt.lon})[key~"val1|val2",i];
   way(around:1000,${req.body.prompt.lat},${req.body.prompt.lon})[key~"val1|val2",i];
 );
-out tags center;`;
-
-    const prComplementary = `Act as a senior Geospatial Engineer and Business Intelligence Analyst.
+out tags center;
+Now again Act as a senior Geospatial Engineer and Business Intelligence Analyst.
 
 Your task is to generate a **lightweight Overpass query** to find **complementary businesses** that increase foot traffic for a given business type.
 
@@ -190,9 +192,8 @@ Your task is to generate a **lightweight Overpass query** to find **complementar
 - Latitude: ${req.body.prompt.lat}
 - Longitude: ${req.body.prompt.lon}
 - Radius: 1000
-- Business Type: "${req.body.prompt.business}"`;
-
-    const prAccessibility = `Act as a senior Geospatial Engineer and Urban Planner.
+- Business Type: "${req.body.prompt.business}"
+Now again Act as a senior Geospatial Engineer and Urban Planner.
 
 Your task is to generate an **ultra-lightweight** Overpass query to check accessibility.
 
@@ -214,20 +215,8 @@ Your task is to generate an **ultra-lightweight** Overpass query to check access
   node(around:1000,${req.body.prompt.lat},${req.body.prompt.lon})[railway~"station|subway_entrance",i];
   node(around:1000,${req.body.prompt.lat},${req.body.prompt.lon})[amenity~"bus_station|taxi_point",i];
 );
-out tags center;`;
-
-    /* 1️⃣ Call Gemini */
-    const result = await model.generateContent(prCompetition);
-    const resultC = await model.generateContent(prComplementary);
-    const resultA = await model.generateContent(prAccessibility);
-    const response = await result.response;
-    const responseC = await resultC.response;
-    const responseA = await resultA.response;
-    let overpassQuery = response.text().trim();
-    let overpassQueryC = responseC.text().trim();
-    let overpassQueryA = responseA.text().trim();
-    console.log(overpassQuery, overpassQueryC, overpassQueryA);
-
+out tags center;
+Now you will have 3 queries for overpass
     const fetchOverpass = async (query) => {
       const url =
         "https://overpass-api.de/api/interpreter?data=" +
@@ -242,95 +231,78 @@ out tags center;`;
     await new Promise((resolve) => setTimeout(resolve, 1000)); // 0.6s gap
     const dataA = await fetchOverpass(overpassQueryA);
 
-    // const overpassRes = await fetch(
-    //   "https://overpass-api.de/api/interpreter?data=" +
-    //     encodeURIComponent(overpassQuery)
-    // );
-    // const overpassResC = await fetch(
-    //   "https://overpass-api.de/api/interpreter?data=" +
-    //     encodeURIComponent(overpassQueryC)
-    // );
-    // const overpassResA = await fetch(
-    //   "https://overpass-api.de/api/interpreter?data=" +
-    //     encodeURIComponent(overpassQueryA)
-    // );
-    // const data = await overpassRes.json();
-    // const dataC = await overpassResC.json();
-    // const dataA = await overpassResA.json();
-    res.send({data, dataC, dataA});
-    //     const competitorCount = data.elements.length; // from competition query
-    //     const maxCompetitors = 20; // scale cap, tweak based on city density
-    //     const competitionScore = Math.max(
-    //       0,
-    //       100 - (competitorCount / maxCompetitors) * 100
-    //     );
-    //     const complementCount = dataC.elements.length; // from complementary query
-    //     const maxComplements = 10; // scale cap
+    now by performing above described operations 
+    get data , dataA and data C accurately 
+    and return them as json file
+    dont return anything else
+      just {data, dataA , dataC} accurate and complete
+    dont add query in your answer
+    and syntax to return
+    {
+      data,
+      dataC,
+      dataA
+    }
+      no additional symbols around this
+      maintain consistency in your answer 
+      double check before giving result
+`;
+    let result = await model.generateContent(prCompetition);
+    let response = await result.response;
+    const jsObject = JSON.parse(
+      response
+        .text()
+        .trim()
+        .replace(/```json|```/g, "")
+        .trim()
+    );
+    const competitorCount = jsObject.data.elements.length;
+    const complementCount = jsObject.dataC.elements.length;
+    const accessibilityCount = jsObject.dataA.elements.length;
 
-    //     const complementaryScore = Math.min(
-    //       100,
-    //       (complementCount / maxComplements) * 100
-    //     );
-    //     const accessibilityCount = dataA.elements.length; // from accessibility query
-    //     const maxAccess = 15; // cap
+    const prScoring = `Act as a Senior Business Intelligence Analyst and Urban Planner.
 
-    //     const accessibilityScore = Math.min(
-    //       100,
-    //       (accessibilityCount / maxAccess) * 100
-    //     );
-    //     // You can assign weights: e.g., competition 40%, complementary 30%, accessibility 30%
-    //     const totalScore =
-    //       competitionScore * 0.4 +
-    //       complementaryScore * 0.3 +
-    //       accessibilityScore * 0.3;
+    ### DATA INPUT
+    - Business: ${req.body.prompt.business}
+    - Location: Lat ${req.body.prompt.lat}, Lon ${req.body.prompt.lon}
+    - Competitor Count: ${competitorCount}
+    - Complementary Count: ${complementCount}
+    - Accessibility Count: ${accessibilityCount}
 
-    //     console.log({
-    //       competitionScore,
-    //       complementaryScore,
-    //       accessibilityScore,
-    //       totalScore,
-    //     });
-    //     const prScoring = `Act as a Senior Business Intelligence Analyst and Urban Planner.
+    ### YOUR TASK
+    1. **Estimate Population Density:** Based on the coordinates provided, estimate the residential/commercial density on a scale of 0-100 (e.g., dense urban center = 90+, suburban = 40, rural = 10).
+    2. **Set Dynamic Caps:** Based on the density, define the ideal "Max" caps for this specific area.
+    3. **Calculate Scores:** Use the formulas below with your dynamic caps.
 
-    // ### DATA INPUT
-    // - Location: Lat ${req.body.prompt.lat}, Lon ${req.body.prompt.lon}
-    // - Competitor Count: ${competitorCount}
-    // - Complementary Count: ${complementCount}
-    // - Accessibility Count: ${accessibilityCount}
+    ### FORMULAS
+    - **Competition Score:** Max(0, 100 - (competitorCount / DynamicMaxComp) * 100)
+    - **Complementary Score:** Min(100, (complementCount / DynamicMaxComp) * 100)
+    - **Accessibility Score:** Min(100, (accessibilityCount / DynamicMaxAcc) * 100)
 
-    // ### YOUR TASK
-    // 1. **Estimate Population Density:** Based on the coordinates provided, estimate the residential/commercial density on a scale of 0-100 (e.g., dense urban center = 90+, suburban = 40, rural = 10).
-    // 2. **Set Dynamic Caps:** Based on the density, define the ideal "Max" caps for this specific area.
-    // 3. **Calculate Scores:** Use the formulas below with your dynamic caps.
-
-    // ### FORMULAS
-    // - **Competition Score:** Max(0, 100 - (competitorCount / DynamicMaxComp) * 100)
-    // - **Complementary Score:** Min(100, (complementCount / DynamicMaxComp) * 100)
-    // - **Accessibility Score:** Min(100, (accessibilityCount / DynamicMaxAcc) * 100)
-
-    // ### STRICT OUTPUT FORMAT (JSON ONLY)
-    // {
-    //   "densityScore": number,
-    //   "scores": {
-    //     "competition": number,
-    //     "complementary": number,
-    //     "accessibility": number,
-    //     "density": number
-    //   },
-    //   "verdict": "string (Short summary of viability)"
-    // }
+    ### STRICT OUTPUT FORMAT (JSON ONLY)
+    {
+        "competition": number,
+        "complementary": number,
+        "accessibility": number,
+        "density": number,
+      "verdict": "string ( summary of viability , discuss the given business and above 4 parameters on that business)"
+    }
     // `;
-    // const resultS = await model.generateContent(prScoring);
-    // const responseS = await resultS.response;
-    // let dataS = JSON.parse(responseA.text().trim());
-    //     res.send(data);
+    result = await model.generateContent(prScoring);
+    response = await result.response.text().trim();
+    let data = JSON.parse(response);
+    console.log(data);
+    const report = new Report({ data });
+    await report.save();
+    res.render("result", { title: "Result", link: "result", data });
   })
 );
 
 // History page
-app.get("/history", isLoggedIn, (req, res) => {
-  res.send("Under production ..");
-});
+app.get("/history", isLoggedIn, wrapAsync(async (req, res) => {
+  const history = await Report.find();
+  res.render("history", { title: "History", link: "history", history });
+}));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

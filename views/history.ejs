@@ -1,0 +1,54 @@
+<% layout("/layouts/boilerPlate.ejs") -%>
+
+<div class="history-page">
+    <div class="history-container">
+
+        <h1 class="history-title">Report History</h1>
+        <p class="history-subtitle">
+            Previously generated market analysis reports
+        </p>
+
+        <% if (!history || history.length === 0) { %>
+            <div class="empty-state">
+                No reports available yet.
+            </div>
+        <% } else { %>
+
+            <div class="history-list">
+                <% history.forEach(el => { %>
+
+                    <div class="history-card">
+
+                        <div class="history-scores">
+                            <div>
+                                <span>Competition</span>
+                                <strong><%= el["data"].competition %></strong>
+                            </div>
+                            <div>
+                                <span>Complementary</span>
+                                <strong><%= el["data"].complementary %></strong>
+                            </div>
+                            <div>
+                                <span>Accessibility</span>
+                                <strong><%= el["data"].accessibility %></strong>
+                            </div>
+                            <div>
+                                <span>Density</span>
+                                <strong><%= el["data"].density %></strong>
+                            </div>
+                        </div>
+
+                        <div class="history-verdict">
+                            <span>Verdict</span>
+                            <p><%= el["data"].verdict %></p>
+                        </div>
+
+                    </div>
+
+                <% }) %>
+            </div>
+
+        <% } %>
+
+    </div>
+</div>
