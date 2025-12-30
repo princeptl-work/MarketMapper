@@ -23,10 +23,7 @@
     box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
-/* ------------------------------
-   Inputs / Textarea (Bootstrap-safe)
--------------------------------- */
-
+/* Inputs / Textarea */
 .mm-main .form-control,
 .mm-textarea,
 .mm-input {
@@ -39,12 +36,16 @@
 }
 
 .mm-main .form-control::placeholder,
-.mm-textarea::placeholder {
+.mm-textarea::placeholder,
+.mm-input::placeholder {
     color: #94a3b8;
 }
 
-/* Focus state (FIXES white bg issue) */
-.mm-main .form-control:focus {
+/* Focus state */
+.mm-main .form-control:focus,
+.mm-main .mm-input:focus,
+.mm-main .mm-textarea:focus {
+    outline: none;
     background: #020617;
     color: #e5e7eb;
     border-color: #22c55e;
@@ -58,34 +59,28 @@
     margin-bottom: 20px;
 }
 
-/* ------------------------------
-   Bootstrap validation overrides
--------------------------------- */
-
-/* Invalid */
-.mm-main .was-validated .form-control:invalid {
+/* Bootstrap validation overrides */
+.mm-main .was-validated .form-control:invalid,
+.mm-main .was-validated .mm-input:invalid,
+.mm-main .was-validated .mm-textarea:invalid {
     background: #020617;
     color: #e5e7eb;
     border-color: #ef4444;
 }
 
-/* Valid */
-.mm-main .was-validated .form-control:valid {
+.mm-main .was-validated .form-control:valid,
+.mm-main .was-validated .mm-input:valid,
+.mm-main .was-validated .mm-textarea:valid {
     background: #020617;
     color: #e5e7eb;
     border-color: #22c55e;
 }
 
-/* Remove Bootstrap icons (important for dark UI) */
-.mm-main .was-validated .form-control:valid,
-.mm-main .was-validated .form-control:invalid {
-    background-image: none;
-}
-
-/* Location */
+/* Location Container - Higher Z-index to beat map tiles */
 .mm-location {
     position: relative;
     margin-bottom: 20px;
+    z-index: 1001; 
 }
 
 .mm-label {
@@ -95,43 +90,52 @@
     color: #94a3b8;
 }
 
-/* Suggestions */
-.mm-suggestions {
+/* Suggestions Dropdown */
+.suggestions {
     list-style: none;
     position: absolute;
     width: 100%;
     background: #020617;
     border: 1px solid #334155;
     border-top: none;
-    max-height: 150px;
+    max-height: 200px;
     overflow-y: auto;
-    z-index: 50;
+    z-index: 1002;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
 }
 
-.mm-suggestions li {
+.suggestion-item {
     padding: 10px;
     cursor: pointer;
     border-bottom: 1px solid #1e293b;
     color: #e5e7eb;
 }
 
-.mm-suggestions li:hover {
+.suggestion-item:hover {
     background: #1e293b;
 }
 
-/* Map */
+/* Map Wrapper - Lower Z-index */
 .mm-map-wrapper {
     margin-bottom: 20px;
+    position: relative;
+    height: 300px;
+    width: 100%;
+    z-index: 1;
+    border-radius: 10px;
+    overflow: hidden; /* Keeps map corners rounded */
 }
 
 .mm-map {
-    height: 200px;
-    border-radius: 10px;
-    border: 1px dashed #475569;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #64748b;
+    height: 100%;
+    width: 100%;
+    border: 1px solid #475569;
+}
+
+/* Fix for potential tile breaking */
+.leaflet-container img {
+    max-width: none !important;
 }
 
 /* Button */

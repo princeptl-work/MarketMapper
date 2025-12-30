@@ -1,5 +1,10 @@
 <% layout("/layouts/boilerPlate.ejs") -%>
 
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
 <main class="mm-main">
   <form
     class="mm-form needs-validation"
@@ -7,7 +12,6 @@
     action="/result"
     novalidate
   >
-    <!-- Business Idea -->
     <textarea
       class="mm-textarea form-control mb-0"
       name="prompt[business]"
@@ -15,9 +19,11 @@
       required
     ></textarea>
     <div class="invalid-feedback">Please enter valid Prompt.</div>
-    <!-- Location Input -->
+
     <div class="mm-location">
-      <label for="location" class="mm-label mt-4 form-label"> Select Location </label>
+      <label for="location" class="mm-label mt-4 form-label"
+        >Select Location</label
+      >
       <input
         class="mm-input form-control"
         type="text"
@@ -27,13 +33,104 @@
         autocomplete="off"
         required
       />
+      <div id="suggestions" class="suggestions"></div>
       <div class="invalid-feedback">Please enter valid location</div>
     </div>
 
-    <!-- Map -->
     <div class="mm-map-wrapper">
-      <div id="map" class="mm-map mt-3">Map will appear here</div>
+      <div id="map" class="mm-map"></div>
     </div>
+    <input type="text" hidden name="prompt[lat]" id="lat" />
+    <input type="text" hidden name="prompt[lon]" id="lon" />
     <button class="mm-btn" type="submit">Analyze your idea</button>
   </form>
 </main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  window.addEventListener("load", () => {
+    const mapDiv = document.getElementById("map");
+    // Hide the wrapper initially so there isn't a big empty hole in your form
+    const mapWrapper = document.querySelector(".mm-map-wrapper");
+    mapWrapper.style.display = "none";
+    let map = null;
+    let marker = null;
+    const searchInput = document.getElementById("location");
+    const suggestionsDiv = document.getElementById("suggestions");
+    let debounceTimer;
+    let lastQuery = "";
+    let latInput = document.getElementById("lat"),
+      lonInput = document.getElementById("lon");
+    function initMap(lat, lon) {
+      latInput.value = lat;
+      lonInput.value = lon;
+      if (!map) {
+        mapWrapper.style.display = "block"; // Show wrapper
+        map = L.map("map").setView([lat, lon], 14);
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "© OpenStreetMap contributors",
+        }).addTo(map);
+
+        // Fix for tiles not loading correctly when container starts hidden
+        setTimeout(() => {
+          map.invalidateSize();
+        }, 200);
+      }
+
+      if (marker) map.removeLayer(marker);
+      marker = L.marker([lat, lon]).addTo(map);
+      map.setView([lat, lon], 14);
+    }
+
+    searchInput.addEventListener("input", () => {
+      const query = searchInput.value.trim();
+      clearTimeout(debounceTimer);
+      if (query.length < 2) {
+        suggestionsDiv.innerHTML = "";
+        return;
+      }
+
+      debounceTimer = setTimeout(() => {
+        lastQuery = query;
+        fetchSuggestions(query);
+      }, 400);
+    });
+
+    function fetchSuggestions(query) {
+      fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          suggestionsDiv.innerHTML = "";
+          if (!data.features || data.features.length === 0) return;
+
+          data.features.slice(0, 7).forEach((place) => {
+            const div = document.createElement("div");
+            div.className = "suggestion-item";
+
+            const props = place.properties;
+            const nameParts = [
+              props.name,
+              props.city,
+              props.state,
+              props.country,
+            ].filter(Boolean);
+            const name = nameParts.join(", ");
+            div.textContent = name;
+            div.addEventListener("click", () => {
+              searchInput.value = name;
+              suggestionsDiv.innerHTML = "";
+              const lat = place.geometry.coordinates[1];
+              const lon = place.geometry.coordinates[0];
+              initMap(lat, lon);
+            });
+            suggestionsDiv.appendChild(div);
+          });
+        });
+    }
+
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".mm-location")) suggestionsDiv.innerHTML = "";
+    });
+  });
+</script>
